@@ -1,3 +1,4 @@
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -17,6 +18,16 @@ builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionStr"));
 });
+
+builder.Services.AddMassTransit(options =>
+{
+    options.UsingRabbitMq((context, config) =>
+    {
+        config.Host(builder.Configuration.GetConnectionString("RabbitMq"));
+    });
+});
+
+//builder.Services.AddMassTransitHostedService();
 
 var app = builder.Build();
 
