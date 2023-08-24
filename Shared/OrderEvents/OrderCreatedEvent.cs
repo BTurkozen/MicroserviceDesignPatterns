@@ -14,7 +14,7 @@ namespace Shared.OrderEvents
             OrderItemMessages = new List<OrderItemMessage>();
         }
         public int OrderId { get; set; }
-        public string BuyerId { get; set; }
+        public int BuyerId { get; set; }
         public PaymentMessage Payment { get; set; }
         public List<OrderItemMessage> OrderItemMessages { get; set; }
     }
