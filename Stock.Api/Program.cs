@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Stock.Api.Models;
+using System.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +12,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<DataContext>(options =>
+{
+    options.UseInMemoryDatabase("SagaChoreagraphyStockDb");
+});
 
 //builder.Services.AddMassTransit(options =>
 //{
@@ -19,6 +27,21 @@ builder.Services.AddSwaggerGen();
 //});
 
 var app = builder.Build();
+
+using var scope = app.Services.CreateScope();
+
+var serviceProvider = scope.ServiceProvider;
+
+var dataContext = serviceProvider.GetRequiredService<DataContext>();
+
+if (dataContext.Stocks.Any() is false)
+{
+    dataContext.Stocks.Add(new Stock.Api.Models.Stock() { Id = 1, ProductId = 1, Count=100});
+
+    dataContext.Stocks.Add(new Stock.Api.Models.Stock() { Id = 2, ProductId = 2, Count = 200 });
+
+    dataContext.SaveChanges();
+}
 
 if (app.Environment.IsDevelopment())
 {
