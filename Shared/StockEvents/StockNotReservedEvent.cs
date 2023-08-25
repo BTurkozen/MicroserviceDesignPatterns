@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shared.Messages;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,8 @@ namespace Shared.StockEvents
 {
     public class StockNotReservedEvent
     {
+        public int OrderId { get; set; }
+        public int BuyerId { get; set; }
+        public string Message { get; set; }
     }
 }
