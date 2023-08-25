@@ -1,7 +1,12 @@
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Shared.OrderEvents;
+using Shared.Settings;
+using Stock.Api.Consumers;
 using Stock.Api.Models;
 using System.Linq;
 
@@ -18,13 +23,20 @@ builder.Services.AddDbContext<DataContext>(options =>
     options.UseInMemoryDatabase("SagaChoreagraphyStockDb");
 });
 
-//builder.Services.AddMassTransit(options =>
-//{
-//    options.UsingRabbitMq((context, config) =>
-//    {
-//        config.Host(builder.Configuration.GetConnectionString("RabbitMq"));
-//    });
-//});
+builder.Services.AddMassTransit(options =>
+{
+    options.AddConsumer<OrderCreatedEventConsumer>();
+
+    options.UsingRabbitMq((context, config) =>
+    {
+        config.Host(builder.Configuration.GetConnectionString("RabbitMq"));
+
+        config.ReceiveEndpoint(RabbitMqSettingsConst.StockOrderCreatedEventQueueName, e =>
+        {
+            e.ConfigureConsumer<OrderCreatedEventConsumer>(context);
+        });
+    });
+});
 
 var app = builder.Build();
 
@@ -36,7 +48,7 @@ var dataContext = serviceProvider.GetRequiredService<DataContext>();
 
 if (dataContext.Stocks.Any() is false)
 {
-    dataContext.Stocks.Add(new Stock.Api.Models.Stock() { Id = 1, ProductId = 1, Count=100});
+    dataContext.Stocks.Add(new Stock.Api.Models.Stock() { Id = 1, ProductId = 1, Count = 100 });
 
     dataContext.Stocks.Add(new Stock.Api.Models.Stock() { Id = 2, ProductId = 2, Count = 200 });
 
