@@ -19,7 +19,7 @@ namespace Stock.Api.Consumers
         private readonly ISendEndpointProvider _sendEndpointProvider;
         private readonly IPublishEndpoint _publishEndpoint;
 
-        public OrderCreatedEventConsumer(DataContext dataContext, ILogger logger, ISendEndpointProvider sendEndpointProvider, IPublishEndpoint publishEndpoint)
+        public OrderCreatedEventConsumer(DataContext dataContext, ILogger<OrderCreatedEventConsumer> logger, ISendEndpointProvider sendEndpointProvider, IPublishEndpoint publishEndpoint)
         {
             _dataContext = dataContext;
             _logger = logger;
@@ -62,7 +62,7 @@ namespace Stock.Api.Consumers
                     OrderItemMessages = context.Message.OrderItemMessages
                 };
 
-                await _sendEndpointProvider.Send(stockReservedEvent);
+                await sendEnpoint.Send(stockReservedEvent);
             }
             else
             {
@@ -71,6 +71,8 @@ namespace Stock.Api.Consumers
                     OrderId = context.Message.OrderId,
                     Message = "Not enough stock"
                 });
+
+                _logger.LogInformation($"Not enough stock for Buyer Id : {context.Message.BuyerId}");
             }
         }
     }
