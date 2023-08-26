@@ -4,7 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Order.Api.Consumers;
 using Order.Api.Models;
+using Shared.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,13 +23,18 @@ builder.Services.AddDbContext<DataContext>(options =>
 
 builder.Services.AddMassTransit(options =>
 {
+    options.AddConsumer<PaymentCompletedEventConsumer>();
+
     options.UsingRabbitMq((context, config) =>
     {
         config.Host(builder.Configuration.GetConnectionString("RabbitMq"));
+
+        config.ReceiveEndpoint(RabbitMqSettingsConst.OrderPaymentCompletedEventQueueName, e =>
+        {
+            e.ConfigureConsumer<PaymentCompletedEventConsumer>(context);
+        });
     });
 });
-
-//builder.Services.AddMassTransitHostedService();
 
 var app = builder.Build();
 
