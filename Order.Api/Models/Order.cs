@@ -23,7 +23,7 @@ namespace Order.Api.Models
     public enum Status
     {
         Suspend,
-        Success,
+        Complete,
         Fail
     }
 }
