@@ -25,7 +25,7 @@ namespace Payment.Api.Consumers
             {
                 _logger.LogInformation($"{context.Message.PaymentMessage.TotalPrice}₺ was withrawn from credit card for userId: {context.Message.BuyerId}");
 
-                await _publishEndpoint.Publish(new PaymentSuccessedEvent
+                await _publishEndpoint.Publish(new PaymentCompletedEvent
                 {
                     OrderId = context.Message.OrderId,
                     BuyerId = context.Message.BuyerId,
