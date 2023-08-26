@@ -1,7 +1,6 @@
 ﻿using MassTransit;
 using Microsoft.Extensions.Logging;
 using Order.Api.Models;
-using Shared.PaymentEvent;
 using Shared.StockEvents;
 using System.Threading.Tasks;
 
