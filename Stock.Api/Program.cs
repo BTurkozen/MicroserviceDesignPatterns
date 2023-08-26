@@ -5,12 +5,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Shared.OrderEvents;
 using Shared.Settings;
 using Stock.Api.Consumers;
 using Stock.Api.Models;
 using System.Linq;
-using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,8 +43,6 @@ builder.Services.AddMassTransit(options =>
         });
     });
 });
-
-//builder.Services.AddLogging();
 
 var logger = builder.Services.BuildServiceProvider().GetService<ILogger<OrderCreatedEventConsumer>>();
 
